@@ -44,6 +44,7 @@ class MovieListSerializer(MovieSerializer):
     actors = serializers.SlugRelatedField(
         many=True, read_only=True, slug_field="full_name"
     )
+
     class Meta:
         model = Movie
         fields = (
@@ -56,14 +57,22 @@ class MovieListSerializer(MovieSerializer):
             "image"
         )
 
+
 class MovieDetailSerializer(MovieSerializer):
     genres = GenreSerializer(many=True, read_only=True)
     actors = ActorSerializer(many=True, read_only=True)
 
-
     class Meta:
         model = Movie
-        fields = ("id", "title", "description", "duration", "genres", "actors", "image")
+        fields = (
+            "id",
+            "title",
+            "description",
+            "duration",
+            "genres",
+            "actors",
+            "image"
+        )
 
 
 class MovieSessionSerializer(serializers.ModelSerializer):
@@ -120,7 +129,7 @@ class TicketSeatsSerializer(TicketSerializer):
 
 
 class MovieSessionDetailSerializer(MovieSessionSerializer):
-    movie = MovieListSerializer(many=False, read_only=True)
+    movie = MovieDetailSerializer(many=False, read_only=True)
     cinema_hall = CinemaHallSerializer(many=False, read_only=True)
     taken_places = TicketSeatsSerializer(
         source="tickets", many=True, read_only=True
@@ -154,4 +163,9 @@ class OrderListSerializer(OrderSerializer):
 class UploadImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ("id", "image")
+        fields = ("image",)
+
+    def validate_image(self, value):
+        if value:
+            return value
+        raise serializers.ValidationError("Image must be an image")

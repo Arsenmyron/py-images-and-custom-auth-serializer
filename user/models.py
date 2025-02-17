@@ -1,10 +1,13 @@
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
+from django.contrib.auth.models import (
+    AbstractUser,
+    UserManager as BaseUserManager
+)
+from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
-    use_in_migrations = True
-
     def _create_user(self, email, password, **extra_fields):
         if not email:
             raise ValueError(_("The Email must be set"))
@@ -40,4 +43,3 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-
